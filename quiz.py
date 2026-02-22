@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
+import random # Add this at the very top of your quiz.py file if it isn't there already!
 
 # --- Styling ---
 st.set_page_config(page_title="Probabilistic Models Prep", page_icon="🎲", layout="wide")
@@ -50,10 +51,14 @@ def load_exam_data(exam_name):
             if img_filename and img_filename.lower() != "nan":
                 full_img_path = os.path.join(EXAM_FOLDER, exam_name, img_filename)
 
+            # Extract options and shuffle them randomly
+            options_list = str(row['options']).split('|')
+            random.shuffle(options_list)
+
             questions.append({
                 "id": row['id'],
                 "question": row['question'],
-                "options": str(row['options']).split('|'),
+                "options": options_list,
                 "correct_answer": str(row['correct_answer']),
                 "explanation": row['explanation'],
                 "context_image": full_img_path
@@ -62,7 +67,7 @@ def load_exam_data(exam_name):
     except Exception as e:
         st.error(f"Error loading {exam_name}: {e}")
         return []
-
+    
 # --- 1. Sidebar Setup & Exam Selection ---
 with st.sidebar:
     st.title("📚 Exam Selector")
